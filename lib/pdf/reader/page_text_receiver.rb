@@ -15,6 +15,7 @@ module PDF
       extend Forwardable
 
       SPACE = " "
+      SEEMINGLY_AVERAGE_SPACE_WIDTH = 0.28
 
       attr_reader :state, :options
 
@@ -149,11 +150,18 @@ module PDF
           th = 1
           scaled_glyph_width = glyph_width * @state.font_size * th
           unless utf8_chars == SPACE
-            space_width = @state.current_font.glyph_width_in_text_space(32)
             @characters << TextRun.new(newx, newy, scaled_glyph_width, @state.font_size, utf8_chars, space_width)
           end
           @state.process_glyph_displacement(glyph_width, 0, utf8_chars == SPACE)
         end
+      end
+
+      def space_width
+        (proper_space_width.nonzero? || SEEMINGLY_AVERAGE_SPACE_WIDTH) * @state.font_size
+      end
+
+      def proper_space_width
+        @state.current_font.glyph_width_in_text_space(SPACE.bytes[0])
       end
 
       def apply_rotation(x, y)

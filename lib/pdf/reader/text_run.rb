@@ -66,8 +66,7 @@ class PDF::Reader
     def +(other)
       raise ArgumentError, "#{other} cannot be merged with this run" unless mergable?(other)
 
-      calculated_space_width = (space_width.zero? ? (0.2 * font_size) : (space_width * font_size)).round(10)
-      if (other.x - endx).round(10) < calculated_space_width
+      if (other.x - endx).round(10) < space_width
         TextRun.new(x, y, other.endx - x, font_size, text + other.text, space_width)
       else
         TextRun.new(x, y, other.endx - x, font_size, "#{text} #{other.text}", space_width)
@@ -101,7 +100,8 @@ class PDF::Reader
     end
 
     def mergable_range
-      @mergable_range ||= Range.new(endx - 3, endx + (space_width.zero? ? font_size : space_width * font_size))
+      raise 'Zero-width space' if space_width.zero?
+      @mergable_range ||= Range.new(endx - 3, endx + space_width)
     end
 
     # Assume string encoding is marked correctly and we can trust String#size to return a
