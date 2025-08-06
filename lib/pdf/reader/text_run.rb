@@ -39,6 +39,19 @@ class PDF::Reader
       end
     end
 
+    def shift_by(x:0,y:0)
+      return if x == 0 && y == 0
+
+      newx = @origin.x + x
+      newy = @origin.y + y
+
+      remove_instance_variable(:@endx) if instance_variable_defined?(:@endx)
+      remove_instance_variable(:@endy) if instance_variable_defined?(:@endy)
+
+      @origin = PDF::Reader::Point.new(newx, newy)
+      nil
+    end
+
     def x
       @origin.x
     end
