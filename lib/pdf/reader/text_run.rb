@@ -60,6 +60,8 @@ class PDF::Reader
     end
 
     def mergable?(other)
+      return true if text == ' ' && other.x <= endx
+
       y.to_i == other.y.to_i && font_size == other.font_size && mergable_range.include?(other.x)
     end
 
